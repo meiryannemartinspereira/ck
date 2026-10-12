@@ -1,5 +1,3 @@
-
-cat > .gitignore <<'EOF'
 # Python
 .venv/
 __pycache__/
@@ -22,12 +20,12 @@ build/
 .vscode/
 .idea/
 .DS_Store
-EOF
 
-# Logs
+# Logs and coverage
 *.log
-
-# Local database and coverage files
 *.sqlite3
 .coverage
 htmlcov/
+
+# Docker local overrides
+compose.override.yaml

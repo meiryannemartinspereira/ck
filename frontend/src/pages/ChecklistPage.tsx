@@ -22,13 +22,13 @@ const DAYS: ClassDay[] = [
 
 const TIMES: ClassTime[] = ['08-10', '10-12', '13:30', '17:30']
 
-function getToday(): string {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
+interface ChecklistPageProps {
+  classDay: ClassDay
+  classTime: ClassTime
+  checklistDate: string
+  onClassDayChange: (day: ClassDay) => void
+  onClassTimeChange: (time: ClassTime) => void
+  onChecklistDateChange: (date: string) => void
 }
 
 function formatDate(date: string): string {
@@ -36,10 +36,14 @@ function formatDate(date: string): string {
   return `${day}/${month}/${year}`
 }
 
-function ChecklistPage() {
-  const [classDay, setClassDay] = useState<ClassDay>('SEGUNDA')
-  const [classTime, setClassTime] = useState<ClassTime>('08-10')
-  const [checklistDate, setChecklistDate] = useState(getToday)
+function ChecklistPage({
+  classDay,
+  classTime,
+  checklistDate,
+  onClassDayChange,
+  onClassTimeChange,
+  onChecklistDateChange,
+}: ChecklistPageProps) {
   const [checklists, setChecklists] = useState<Checklist[]>([])
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -145,7 +149,7 @@ function ChecklistPage() {
           <select
             value={classDay}
             onChange={(event) =>
-              setClassDay(event.target.value as ClassDay)
+              onClassDayChange(event.target.value as ClassDay)
             }
           >
             {DAYS.map((day) => (
@@ -161,7 +165,7 @@ function ChecklistPage() {
           <select
             value={classTime}
             onChange={(event) =>
-              setClassTime(event.target.value as ClassTime)
+              onClassTimeChange(event.target.value as ClassTime)
             }
           >
             {TIMES.map((time) => (
@@ -177,7 +181,9 @@ function ChecklistPage() {
           <input
             type="date"
             value={checklistDate}
-            onChange={(event) => setChecklistDate(event.target.value)}
+            onChange={(event) =>
+              onChecklistDateChange(event.target.value)
+            }
           />
         </label>
       </section>
