@@ -1,0 +1,401 @@
+
+:root {
+  font-family: Roboto, Arial, sans-serif;
+  color: #343434;
+  background: #f7f8fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --color-yellow: #f1cb0b;
+  --color-gray: #848484;
+  --color-red: #bf2131;
+  --color-green: #93c93d;
+  --color-blue: #3ea9ce;
+  --color-text: #343434;
+  --color-muted: #848484;
+  --color-background: #f7f8fa;
+  --color-white: #ffffff;
+  --color-border: #e9ebef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--color-blue);
+  outline-offset: 3px;
+}
+
+.app-layout {
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 10;
+  display: flex;
+  width: 250px;
+  flex-direction: column;
+  padding: 28px 18px 20px;
+  background: var(--color-white);
+  border-right: 1px solid var(--color-border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px 36px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--color-yellow);
+  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.menu-label {
+  display: block;
+  margin: 0 10px 12px;
+  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 13px;
+  margin: 4px 0;
+  padding: 13px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #686868;
+  cursor: pointer;
+  text-align: left;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.menu-item:hover {
+  background: #f7f8fa;
+}
+
+.menu-item.active {
+  background: #fff8d8;
+  color: #343434;
+  font-weight: 700;
+}
+
+.menu-icon {
+  display: grid;
+  width: 24px;
+  place-items: center;
+  font-size: 21px;
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: auto;
+  padding: 16px 8px 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-green);
+}
+
+.main-content {
+  min-height: 100vh;
+  margin-left: 250px;
+  padding: 42px;
+}
+
+.page-header {
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  color: var(--color-gray);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.page-header h2 {
+  margin: 12px 0 8px;
+  font-size: clamp(26px, 3vw, 34px);
+  letter-spacing: -1px;
+}
+
+.page-header p,
+.section-heading p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.welcome-banner {
+  position: relative;
+  display: flex;
+  min-height: 230px;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 36px 40px;
+  border-radius: 20px;
+  background: var(--color-yellow);
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 1;
+  max-width: 510px;
+}
+
+.welcome-tag {
+  display: inline-block;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 55%);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.welcome-content h3 {
+  margin: 18px 0 10px;
+  font-size: clamp(24px, 3vw, 32px);
+  letter-spacing: -0.8px;
+}
+
+.welcome-content p {
+  max-width: 430px;
+  margin: 0;
+  color: #504719;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.welcome-decoration {
+  display: grid;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  place-items: center;
+  margin-left: 24px;
+  border: 1px solid rgb(52 52 52 / 12%);
+  border-radius: 45px;
+  background: rgb(255 255 255 / 35%);
+  transform: rotate(-8deg);
+}
+
+.welcome-decoration span {
+  color: #343434;
+  font-size: 45px;
+  font-weight: 900;
+  letter-spacing: -4px;
+}
+
+.shortcuts-section {
+  margin-top: 38px;
+}
+
+.section-heading {
+  margin-bottom: 20px;
+}
+
+.section-heading h3 {
+  margin: 0 0 7px;
+  font-size: 20px;
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.shortcut-card {
+  position: relative;
+  display: flex;
+  min-height: 175px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+  background: var(--color-white);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.shortcut-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgb(0 0 0 / 5%);
+}
+
+.shortcut-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  margin-bottom: 17px;
+  border-radius: 12px;
+  font-size: 23px;
+}
+
+.shortcut-icon.blue {
+  background: #e6f6fb;
+  color: #227f9c;
+}
+
+.shortcut-icon.green {
+  background: #edf7df;
+  color: #4e7620;
+}
+
+.shortcut-icon.red {
+  background: #fbeaec;
+  color: var(--color-red);
+}
+
+.shortcut-icon.yellow {
+  background: #fff8d8;
+  color: #786300;
+}
+
+.shortcut-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.shortcut-description {
+  margin-top: 7px;
+  padding-right: 12px;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.shortcut-arrow {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  color: var(--color-gray);
+  font-size: 21px;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 210px;
+  }
+
+  .main-content {
+    margin-left: 210px;
+    padding: 28px;
+  }
+
+  .welcome-decoration {
+    width: 100px;
+    height: 100px;
+    border-radius: 30px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    position: static;
+    width: 100%;
+    padding: 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .brand {
+    padding-bottom: 18px;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .menu-label,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .menu-item {
+    width: auto;
+    flex: 1 1 auto;
+    gap: 6px;
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .menu-icon {
+    width: auto;
+    font-size: 17px;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 24px 16px;
+  }
+
+  .welcome-banner {
+    min-height: 200px;
+    padding: 24px;
+  }
+
+  .welcome-decoration {
+    display: none;
+  }
+
+  .shortcut-grid {
+    grid-template-columns: 1fr;
+  }
+}
