@@ -57,10 +57,16 @@ class StudentUpdate(StudentCreate):
     pass
 
 
+class StudentScheduleResponse(BaseModel):
+    class_day: ClassDay
+    class_time: ClassTime
+    teachers: list[str]
+
+
 class StudentResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     name: str
-    schedules: list[StudentScheduleCreate]
+    schedules: list[StudentScheduleResponse]
     course_names: list[str]

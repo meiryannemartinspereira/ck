@@ -3,31 +3,48 @@ from sqlalchemy.orm import Session
 from app.models.associations import StudentSchedule
 from app.models.course import Course
 from app.models.student import Student
+from app.models.enums import ClassDay, ClassTime
 from app.repositories.student_repository import (
     delete_student,
     get_course_by_name,
     get_student_by_id,
     list_students,
 )
+from app.repositories.teacher_repository import get_teachers_for_schedule
 from app.schemas.student import (
     StudentCreate,
     StudentResponse,
     StudentScheduleCreate,
+    StudentScheduleResponse,
     StudentUpdate,
 )
 
 
-def _to_response(student: Student) -> StudentResponse:
+def _to_response(
+    session: Session,
+    student: Student,
+) -> StudentResponse:
+    schedules = []
+
+    for schedule in student.schedules:
+        teachers = get_teachers_for_schedule(
+            session=session,
+            class_day=schedule.class_day,
+            class_time=schedule.class_time,
+        )
+
+        schedules.append(
+            StudentScheduleResponse(
+                class_day=schedule.class_day,
+                class_time=schedule.class_time,
+                teachers=[teacher.name for teacher in teachers],
+            )
+        )
+
     return StudentResponse(
         id=student.id,
         name=student.name,
-        schedules=[
-            StudentScheduleCreate(
-                class_day=schedule.class_day,
-                class_time=schedule.class_time,
-            )
-            for schedule in student.schedules
-        ],
+        schedules=schedules,
         course_names=[course.name for course in student.courses],
     )
 
@@ -37,7 +54,6 @@ def create_student(
     data: StudentCreate,
 ) -> StudentResponse:
     student = Student(name=data.name)
-
     student.schedules = [
         StudentSchedule(
             class_day=schedule.class_day,
@@ -59,7 +75,7 @@ def create_student(
     try:
         session.commit()
         session.refresh(student)
-        return _to_response(student)
+        return _to_response(session, student)
     except Exception:
         session.rollback()
         raise
@@ -79,7 +95,10 @@ def get_students(
     )
 
     return {
-        "items": [_to_response(student) for student in students],
+        "items": [
+            _to_response(session, student)
+            for student in students
+        ],
         "total": total,
         "page": page,
         "page_size": page_size,
@@ -97,7 +116,6 @@ def update_student(
         return None
 
     student.name = data.name
-
     student.schedules.clear()
     student.schedules.extend(
         StudentSchedule(
@@ -122,7 +140,7 @@ def update_student(
     try:
         session.commit()
         session.refresh(student)
-        return _to_response(student)
+        return _to_response(session, student)
     except Exception:
         session.rollback()
         raise
