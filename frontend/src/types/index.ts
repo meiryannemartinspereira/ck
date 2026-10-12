@@ -51,3 +51,26 @@ export interface TeacherInput {
   name: string
   schedules: TeacherSchedule[]
 }
+
+export type ChecklistEntryStatus = 'PENDENTE' | 'PREENCHIDO'
+
+export type ChecklistStatus = 'EM_ANDAMENTO' | 'CONCLUIDO'
+
+export interface ChecklistEntry {
+  id: number
+  student_id: number
+  student_name: string
+  teachers: string[]
+  course_names: string[]
+  status: ChecklistEntryStatus
+  observation: string
+}
+
+export interface Checklist {
+  id: number
+  class_day: ClassDay
+  class_time: ClassTime
+  status: ChecklistStatus
+  date: string
+  entries: ChecklistEntry[]
+}

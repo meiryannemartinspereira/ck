@@ -1,4 +1,5 @@
 import type {
+  Checklist,
   PaginatedStudents,
   PaginatedTeachers,
   Student,
@@ -29,6 +30,12 @@ interface ListTeachersParams {
   name?: string
   page: number
   pageSize: number
+}
+
+interface ListChecklistsParams {
+  classDay: Checklist['class_day']
+  classTime: Checklist['class_time']
+  checklistDate?: string
 }
 
 async function request<T>(
@@ -139,4 +146,34 @@ export function deleteTeacher(teacherId: number): Promise<void> {
   return request<void>(`/teachers/${teacherId}`, {
     method: 'DELETE',
   })
+}
+
+export async function listChecklists({
+  classDay,
+  classTime,
+  checklistDate,
+}: ListChecklistsParams): Promise<Checklist[]> {
+  const params = new URLSearchParams({
+    class_day: classDay,
+    class_time: classTime,
+  })
+
+  if (checklistDate) {
+    params.set('checklist_date', checklistDate)
+  }
+
+  return request<Checklist[]>(`/checklists/?${params.toString()}`)
+}
+
+export function updateChecklistEntryObservation(
+  entryId: number,
+  observation: string,
+): Promise<Checklist['entries'][number]> {
+  return request<Checklist['entries'][number]>(
+    `/checklists/entries/${entryId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ observation }),
+    },
+  )
 }
