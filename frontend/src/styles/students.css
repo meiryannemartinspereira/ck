@@ -1,0 +1,358 @@
+.students-page {
+  width: 100%;
+}
+
+.students-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.students-search {
+  width: min(100%, 380px);
+  padding: 13px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  outline: none;
+  background: var(--color-white);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.students-search:focus,
+.students-field input:focus,
+.students-field select:focus {
+  border-color: var(--color-blue);
+  outline: none;
+}
+
+.students-add-button {
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-yellow);
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.students-add-button:hover {
+  filter: brightness(0.96);
+}
+
+.students-add-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.students-table-container {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-white);
+}
+
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.students-table thead {
+  background: #f7f8fa;
+}
+
+.students-table th {
+  padding: 16px;
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.students-table td {
+  padding: 16px;
+  border-top: 1px solid var(--color-border);
+  font-size: 13px;
+  line-height: 1.8;
+  vertical-align: top;
+}
+
+.students-table tbody tr:hover {
+  background: #fcfcfd;
+}
+
+.students-name {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.students-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.students-action-button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-gray);
+  font-size: 19px;
+  cursor: pointer;
+}
+
+.students-action-button:hover {
+  background: #e6f6fb;
+  color: #227f9c;
+}
+
+.students-action-button.edit:hover {
+  background: #fff8d8;
+  color: #786300;
+}
+
+.students-action-button.delete:hover {
+  background: #fbeaec;
+  color: var(--color-red);
+}
+
+.students-empty {
+  padding: 44px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-white);
+  text-align: center;
+}
+
+.students-empty h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.students-empty p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.students-feedback,
+.students-success,
+.students-error {
+  font-size: 13px;
+}
+
+.students-feedback {
+  color: var(--color-muted);
+}
+
+.students-success {
+  color: #56851d;
+}
+
+.students-error {
+  color: var(--color-red);
+}
+
+.students-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.students-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.students-pagination button,
+.students-cancel-button {
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.students-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.students-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: 24px;
+  background: rgb(30 35 40 / 45%);
+}
+
+.students-modal {
+  width: min(100%, 560px);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 26px;
+  border-radius: 16px;
+  background: var(--color-white);
+  box-shadow: 0 16px 50px rgb(0 0 0 / 15%);
+}
+
+.students-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.students-modal-header h3 {
+  margin: 8px 0 0;
+  font-size: 22px;
+}
+
+.students-modal-close {
+  border: 0;
+  background: transparent;
+  color: var(--color-gray);
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.students-modal fieldset {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.students-field {
+  display: grid;
+  gap: 8px;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.students-field input,
+.students-field select {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.students-field small {
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.students-field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.students-field-heading button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #227f9c;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.students-schedule-list {
+  display: grid;
+  gap: 12px;
+}
+
+.students-schedule-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.students-remove-schedule {
+  width: 36px;
+  height: 38px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-red);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.students-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+@media (max-width: 640px) {
+  .students-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .students-search {
+    width: 100%;
+  }
+
+  .students-add-button {
+    align-self: flex-start;
+  }
+
+  .students-pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .students-modal-backdrop {
+    padding: 12px;
+  }
+
+  .students-modal {
+    padding: 20px;
+  }
+
+  .students-schedule-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .students-remove-schedule {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
