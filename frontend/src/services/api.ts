@@ -1,4 +1,10 @@
-import type { PaginatedStudents, Student } from '../types'
+import type {
+  PaginatedStudents,
+  PaginatedTeachers,
+  Student,
+  Teacher,
+  TeacherInput,
+} from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -14,6 +20,12 @@ export interface StudentInput {
 }
 
 interface ListStudentsParams {
+  name?: string
+  page: number
+  pageSize: number
+}
+
+interface ListTeachersParams {
   name?: string
   page: number
   pageSize: number
@@ -85,6 +97,46 @@ export function updateStudent(
 
 export function deleteStudent(studentId: number): Promise<void> {
   return request<void>(`/students/${studentId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function listTeachers({
+  name,
+  page,
+  pageSize,
+}: ListTeachersParams): Promise<PaginatedTeachers> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  })
+
+  if (name?.trim()) {
+    params.set('name', name.trim())
+  }
+
+  return request<PaginatedTeachers>(`/teachers/?${params.toString()}`)
+}
+
+export function createTeacher(data: TeacherInput): Promise<Teacher> {
+  return request<Teacher>('/teachers/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export function updateTeacher(
+  teacherId: number,
+  data: TeacherInput,
+): Promise<Teacher> {
+  return request<Teacher>(`/teachers/${teacherId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+}
+
+export function deleteTeacher(teacherId: number): Promise<void> {
+  return request<void>(`/teachers/${teacherId}`, {
     method: 'DELETE',
   })
 }

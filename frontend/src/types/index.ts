@@ -28,3 +28,26 @@ export interface PaginatedStudents {
   page: number
   page_size: number
 }
+
+export interface TeacherSchedule {
+  class_day: ClassDay
+  class_time: ClassTime
+}
+
+export interface Teacher {
+  id: number
+  name: string
+  schedules: TeacherSchedule[]
+}
+
+export interface PaginatedTeachers {
+  items: Teacher[]
+  total: number
+  page: number
+  page_size: number
+}
+
+export interface TeacherInput {
+  name: string
+  schedules: TeacherSchedule[]
+}
