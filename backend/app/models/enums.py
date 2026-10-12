@@ -1,4 +1,3 @@
-
 from enum import Enum
 
 
@@ -21,3 +20,8 @@ class ClassTime(str, Enum):
 class ChecklistStatus(str, Enum):
     PENDENTE = "PENDENTE"
     PREENCHIDO = "PREENCHIDO"
+
+
+class ChecklistOverallStatus(str, Enum):
+    EM_ANDAMENTO = "EM_ANDAMENTO"
+    CONCLUIDO = "CONCLUIDO"

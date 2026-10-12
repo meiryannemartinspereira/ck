@@ -1,37 +1,41 @@
-
-from datetime import date as DateType, datetime
+from datetime import date as DateType
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Date, Enum as SQLAlchemyEnum
-from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import Integer, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base, TimestampMixin
 from app.models.associations import enum_values
-from app.models.enums import ChecklistStatus, ClassDay, ClassTime
+from app.models.enums import (
+    ChecklistOverallStatus,
+    ClassDay,
+    ClassTime,
+)
 
 if TYPE_CHECKING:
-    from app.models.student import Student
+    from app.models.checklist_entry import ChecklistEntry
 
 
 class Checklist(TimestampMixin, Base):
     __tablename__ = "checklists"
     __table_args__ = (
         UniqueConstraint(
-            "student_id",
             "date",
             "class_day",
             "class_time",
-            name="uq_checklist_student_date_schedule",
+            name="uq_checklist_date_schedule",
         ),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    student_id: Mapped[int] = mapped_column(
-        ForeignKey("students.id", ondelete="CASCADE"),
+
+    date: Mapped[DateType] = mapped_column(
+        Date,
         nullable=False,
+        index=True,
     )
-    date: Mapped[DateType] = mapped_column(Date, nullable=False, index=True)
+
     class_day: Mapped[ClassDay] = mapped_column(
         SQLAlchemyEnum(
             ClassDay,
@@ -41,6 +45,7 @@ class Checklist(TimestampMixin, Base):
         ),
         nullable=False,
     )
+
     class_time: Mapped[ClassTime] = mapped_column(
         SQLAlchemyEnum(
             ClassTime,
@@ -50,17 +55,19 @@ class Checklist(TimestampMixin, Base):
         ),
         nullable=False,
     )
-    status: Mapped[ChecklistStatus] = mapped_column(
+
+    status: Mapped[ChecklistOverallStatus] = mapped_column(
         SQLAlchemyEnum(
-            ChecklistStatus,
-            name="checklist_status",
+            ChecklistOverallStatus,
+            name="checklist_overall_status",
             values_callable=enum_values,
             native_enum=False,
         ),
-        default=ChecklistStatus.PENDENTE,
-        server_default=ChecklistStatus.PENDENTE.value,
+        default=ChecklistOverallStatus.EM_ANDAMENTO,
         nullable=False,
     )
-    observation: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    student: Mapped["Student"] = relationship(back_populates="checklists")
+    entries: Mapped[list["ChecklistEntry"]] = relationship(
+        back_populates="checklist",
+        cascade="all, delete-orphan",
+    )
