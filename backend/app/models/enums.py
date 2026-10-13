@@ -13,8 +13,8 @@ class ClassDay(str, Enum):
 class ClassTime(str, Enum):
     EIGHT_TO_TEN = "08-10"
     TEN_TO_TWELVE = "10-12"
-    THIRTEEN_THIRTY = "13:30"
-    SEVENTEEN_THIRTY = "17:30"
+    THIRTEEN_THIRTY_TO_FIFTEEN_THIRTY = "13:30-15:30"
+    FIFTEEN_THIRTY_TO_SEVENTEEN_THIRTY = "15:30-17:30"
 
 
 class ChecklistStatus(str, Enum):

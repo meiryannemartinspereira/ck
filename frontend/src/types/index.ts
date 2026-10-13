@@ -7,7 +7,11 @@ export type ClassDay =
   | 'SEXTA'
   | 'SÁBADO'
 
-export type ClassTime = '08-10' | '10-12' | '13:30' | '17:30'
+export type ClassTime =
+  | '08-10'
+  | '10-12'
+  | '13:30-15:30'
+  | '15:30-17:30'
 
 export interface StudentSchedule {
   class_day: ClassDay

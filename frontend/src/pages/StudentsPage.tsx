@@ -18,7 +18,12 @@ const DAYS: ClassDay[] = [
   'SÁBADO',
 ]
 
-const TIMES: ClassTime[] = ['08-10', '10-12', '13:30', '17:30']
+const TIMES: ClassTime[] = [
+  '08-10',
+  '10-12',
+  '13:30-15:30',
+  '15:30-17:30',
+]
 
 interface ScheduleForm {
   class_day: ClassDay
