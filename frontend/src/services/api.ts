@@ -5,6 +5,7 @@ import type {
   Student,
   Teacher,
   TeacherInput,
+  StudentChecklistHistory,
 } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -179,5 +180,15 @@ export function updateChecklistEntryObservation(
       method: 'PATCH',
       body: JSON.stringify({ observation }),
     },
+  )
+}
+
+export function getStudentChecklistHistory(
+  name: string,
+): Promise<StudentChecklistHistory[]> {
+  const params = new URLSearchParams({ name: name.trim() })
+
+  return request<StudentChecklistHistory[]>(
+    `/checklists/student-history?${params.toString()}`,
   )
 }

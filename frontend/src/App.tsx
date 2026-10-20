@@ -6,6 +6,7 @@ import TeachersPage from './pages/TeachersPage'
 import ChecklistPage from './pages/ChecklistPage'
 import DashboardPage from './pages/DashboardPage'
 import type { ClassDay, ClassTime } from './types'
+import StudentReportPage from './pages/StudentReportPage'
 import './styles/global.css'
 
 export type PageName =
@@ -14,6 +15,7 @@ export type PageName =
   | 'teachers'
   | 'checklist'
   | 'dashboard'
+  | 'student-report'
 
 function getToday(): string {
   const now = new Date()
@@ -62,6 +64,9 @@ function App() {
             checklistDate={checklistDate}
           />
         )
+
+      case 'student-report':
+        return <StudentReportPage />
 
       default:
         return <HomePage onNavigate={setCurrentPage} />

@@ -1,3 +1,4 @@
+
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -12,6 +13,9 @@ from app.schemas.checklist import (
 from app.services.checklist_service import (
     get_checklists_for_schedule,
     update_checklist_observation,
+)
+from app.services.student_report_service import (
+    get_student_checklist_history,
 )
 
 router = APIRouter(prefix="/checklists", tags=["Checklists"])
@@ -56,3 +60,14 @@ def update_checklist_observation_endpoint(
         )
 
     return result
+
+
+@router.get("/student-history")
+def student_checklist_history_endpoint(
+    name: str = Query(min_length=1, max_length=150),
+    session: Session = Depends(get_db),
+):
+    return get_student_checklist_history(
+        session=session,
+        name=name,
+    )

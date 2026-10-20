@@ -82,3 +82,18 @@ export interface Checklist {
   date: string
   entries: ChecklistEntry[]
 }
+
+export interface StudentChecklistHistory {
+  student_id: number
+  student_name: string
+  checklist_id: number
+  checklist_date: string
+  class_day: string
+  class_time: string
+  checklist_status: string
+  entry_id: number
+  status: string
+  observation: string
+  created_at: string
+  updated_at: string
+}
