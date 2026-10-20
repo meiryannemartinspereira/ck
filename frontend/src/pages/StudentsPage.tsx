@@ -49,6 +49,7 @@ function StudentsPage() {
   const [modalMode, setModalMode] = useState<ModalMode | null>(null)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   const [name, setName] = useState('')
+  const [room, setRoom] = useState('')
   const [schedules, setSchedules] = useState<ScheduleForm[]>([
     { ...EMPTY_SCHEDULE },
   ])
@@ -97,6 +98,7 @@ function StudentsPage() {
   function openCreateModal() {
     setSelectedStudent(null)
     setName('')
+    setRoom('')
     setSchedules([{ ...EMPTY_SCHEDULE }])
     setCourses('')
     setError('')
@@ -107,6 +109,7 @@ function StudentsPage() {
   function openStudentModal(student: Student, mode: ModalMode) {
     setSelectedStudent(student)
     setName(student.name)
+    setRoom(student.room ?? '')
     setSchedules(
       student.schedules.map(({ class_day, class_time }) => ({
         class_day,
@@ -165,6 +168,7 @@ function StudentsPage() {
     setSuccess('')
 
     const normalizedName = name.trim()
+    const normalizedRoom = room.trim()
     const courseNames = courses
       .split(',')
       .map((course) => course.trim())
@@ -172,6 +176,11 @@ function StudentsPage() {
 
     if (!normalizedName) {
       setError('Informe o nome do aluno.')
+      return
+    }
+
+    if (!normalizedRoom) {
+      setError('Informe a sala do aluno.')
       return
     }
 
@@ -204,6 +213,7 @@ function StudentsPage() {
 
     const payload: StudentInput = {
       name: normalizedName,
+      room: normalizedRoom,
       schedules,
       course_names: courseNames,
     }
@@ -488,6 +498,17 @@ function StudentsPage() {
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                     placeholder="Digite o nome completo"
+                    required
+                  />
+                </label>
+
+                <label className="students-field">
+                  Sala
+                  <input
+                    value={room}
+                    onChange={(event) => setRoom(event.target.value)}
+                    placeholder="Ex.: Sala 1"
+                    maxLength={100}
                     required
                   />
                 </label>

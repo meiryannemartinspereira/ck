@@ -3,10 +3,10 @@ from datetime import date
 from pydantic import BaseModel
 
 from app.models.enums import (
-    ClassDay,
-    ClassTime,
     ChecklistOverallStatus,
     ChecklistStatus,
+    ClassDay,
+    ClassTime,
 )
 
 
@@ -28,6 +28,7 @@ class ChecklistResponse(BaseModel):
     id: int
     class_day: ClassDay
     class_time: ClassTime
+    room: str | None
     status: ChecklistOverallStatus
     date: date
     entries: list[ChecklistEntryResponse]

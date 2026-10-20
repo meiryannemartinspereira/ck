@@ -36,11 +36,13 @@ type ModalMode = 'create' | 'edit' | null
 
 interface TeacherFormData {
   name: string
+  room: string
   schedules: TeacherSchedule[]
 }
 
 const EMPTY_FORM: TeacherFormData = {
   name: '',
+  room: '',
   schedules: [{ class_day: 'SEGUNDA', class_time: '08-10' }],
 }
 
@@ -92,6 +94,7 @@ function TeachersPage() {
   function openCreateModal() {
     setForm({
       name: '',
+      room: '',
       schedules: [{ class_day: 'SEGUNDA', class_time: '08-10' }],
     })
     setEditingTeacher(null)
@@ -103,6 +106,7 @@ function TeachersPage() {
   function openEditModal(teacher: Teacher) {
     setForm({
       name: teacher.name,
+      room: teacher.room ?? '',
       schedules: teacher.schedules.map((schedule) => ({
         class_day: schedule.class_day,
         class_time: schedule.class_time,
@@ -161,6 +165,10 @@ function TeachersPage() {
       return 'Informe o nome do professor.'
     }
 
+    if (!form.room.trim()) {
+      return 'Informe a sala do professor.'
+    }
+
     if (form.schedules.length === 0) {
       return 'Adicione pelo menos um dia e horário.'
     }
@@ -190,6 +198,7 @@ function TeachersPage() {
 
     const data: TeacherInput = {
       name: form.name.trim(),
+      room: form.room.trim(),
       schedules: form.schedules,
     }
 
@@ -482,6 +491,23 @@ function TeachersPage() {
                     placeholder="Digite o nome completo"
                     required
                     autoFocus
+                  />
+                </label>
+
+                <label className="teachers-field">
+                  <span>Sala</span>
+                  <input
+                    type="text"
+                    value={form.room}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        room: event.target.value,
+                      }))
+                    }
+                    placeholder="Ex.: Sala 1"
+                    maxLength={100}
+                    required
                   />
                 </label>
 

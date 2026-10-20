@@ -1,3 +1,4 @@
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.enums import ClassDay, ClassTime
@@ -10,16 +11,17 @@ class StudentScheduleCreate(BaseModel):
 
 class StudentCreate(BaseModel):
     name: str = Field(min_length=1, max_length=150)
+    room: str = Field(min_length=1, max_length=100)
     schedules: list[StudentScheduleCreate] = Field(min_length=1)
     course_names: list[str] = Field(min_length=1)
 
-    @field_validator("name")
+    @field_validator("name", "room")
     @classmethod
-    def validate_name(cls, value: str) -> str:
+    def validate_text_fields(cls, value: str) -> str:
         value = value.strip()
 
         if not value:
-            raise ValueError("Student name cannot be empty")
+            raise ValueError("This field cannot be empty")
 
         return value
 
@@ -68,5 +70,6 @@ class StudentResponse(BaseModel):
 
     id: int
     name: str
+    room: str | None
     schedules: list[StudentScheduleResponse]
     course_names: list[str]

@@ -1,3 +1,4 @@
+
 from sqlalchemy.orm import Session
 
 from app.models.associations import TeacherSchedule
@@ -19,6 +20,7 @@ def _to_response(teacher: Teacher) -> TeacherResponse:
     return TeacherResponse(
         id=teacher.id,
         name=teacher.name,
+        room=teacher.room,
         schedules=[
             TeacherScheduleCreate(
                 class_day=schedule.class_day,
@@ -33,7 +35,10 @@ def create_teacher(
     session: Session,
     data: TeacherCreate,
 ) -> TeacherResponse:
-    teacher = Teacher(name=data.name)
+    teacher = Teacher(
+        name=data.name,
+        room=data.room,
+    )
     teacher.schedules = [
         TeacherSchedule(
             class_day=schedule.class_day,
@@ -85,6 +90,7 @@ def update_teacher(
         return None
 
     teacher.name = data.name
+    teacher.room = data.room
     teacher.schedules.clear()
     teacher.schedules.extend(
         TeacherSchedule(

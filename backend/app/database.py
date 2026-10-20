@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Generator
 
 from sqlalchemy import DateTime, create_engine, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
@@ -34,3 +35,11 @@ class TimestampMixin:
         onupdate=func.now(),
         nullable=False,
     )
+
+
+def get_db() -> Generator:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

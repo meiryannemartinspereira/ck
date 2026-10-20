@@ -2,7 +2,7 @@ from datetime import date as DateType
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Date, Enum as SQLAlchemyEnum
-from sqlalchemy import Integer, UniqueConstraint
+from sqlalchemy import Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base, TimestampMixin
@@ -24,7 +24,8 @@ class Checklist(TimestampMixin, Base):
             "date",
             "class_day",
             "class_time",
-            name="uq_checklist_date_schedule",
+            "room",
+            name="uq_checklist_date_schedule_room",
         ),
     )
 
@@ -54,6 +55,11 @@ class Checklist(TimestampMixin, Base):
             native_enum=False,
         ),
         nullable=False,
+    )
+
+    room: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
     )
 
     status: Mapped[ChecklistOverallStatus] = mapped_column(

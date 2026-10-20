@@ -30,7 +30,9 @@ const TIMES: ClassTime[] = [
 interface ChecklistPageProps {
   classDay: ClassDay
   classTime: ClassTime
+  room: string
   checklistDate: string
+  onRoomChange: (room: string) => void
   onClassDayChange: (day: ClassDay) => void
   onClassTimeChange: (time: ClassTime) => void
   onChecklistDateChange: (date: string) => void
@@ -44,7 +46,9 @@ function formatDate(date: string): string {
 function ChecklistPage({
   classDay,
   classTime,
+  room,
   checklistDate,
+  onRoomChange,
   onClassDayChange,
   onClassTimeChange,
   onChecklistDateChange,
@@ -62,6 +66,13 @@ function ChecklistPage({
   const entries = checklist?.entries ?? []
 
   async function loadChecklist() {
+    if (!room.trim()) {
+      setChecklists([])
+      setError('Informe a sala para consultar o checklist.')
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError('')
     setSuccess('')
@@ -70,6 +81,7 @@ function ChecklistPage({
       const result = await listChecklists({
         classDay,
         classTime,
+        room,
         checklistDate,
       })
 
@@ -88,7 +100,7 @@ function ChecklistPage({
 
   useEffect(() => {
     void loadChecklist()
-  }, [classDay, classTime, checklistDate])
+  }, [classDay, classTime, room, checklistDate])
 
   function openObservationModal(entry: ChecklistEntry) {
     setSelectedEntry(entry)
@@ -150,6 +162,17 @@ function ChecklistPage({
 
       <section className="checklist-filters">
         <label className="checklist-field">
+          <span>Sala</span>
+          <input
+            type="text"
+            value={room}
+            onChange={(event) => onRoomChange(event.target.value)}
+            placeholder="Ex.: Sala 1"
+            maxLength={100}
+          />
+        </label>
+
+        <label className="checklist-field">
           <span>Dia da aula</span>
           <select
             value={classDay}
@@ -209,7 +232,7 @@ function ChecklistPage({
         <div className="checklist-content-header">
           <div>
             <h2>
-              {classDay} · {classTime}
+              {classDay} · {classTime} · {room || 'Selecione a sala'}
             </h2>
             <p>{formatDate(checklistDate)}</p>
           </div>
