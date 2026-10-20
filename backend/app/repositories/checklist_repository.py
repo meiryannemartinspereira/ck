@@ -20,6 +20,7 @@ def get_or_create_checklist_for_schedule(
     class_day: ClassDay,
     class_time: ClassTime,
     checklist_date: date,
+    room: str,
 ) -> Checklist | None:
     students_statement = (
         select(Student)
@@ -27,12 +28,13 @@ def get_or_create_checklist_for_schedule(
         .where(
             StudentSchedule.class_day == class_day,
             StudentSchedule.class_time == class_time,
+            Student.room == room,
         )
         .options(selectinload(Student.courses))
         .order_by(Student.name)
     )
 
-    students = list(session.scalars(students_statement).all())
+    students = list(session.scalars(students_statement).unique().all())
 
     if not students:
         return None
@@ -43,6 +45,7 @@ def get_or_create_checklist_for_schedule(
             Checklist.date == checklist_date,
             Checklist.class_day == class_day,
             Checklist.class_time == class_time,
+            Checklist.room == room,
         )
         .options(
             selectinload(Checklist.entries)
@@ -58,6 +61,7 @@ def get_or_create_checklist_for_schedule(
             date=checklist_date,
             class_day=class_day,
             class_time=class_time,
+            room=room,
         )
         session.add(checklist)
         session.flush()

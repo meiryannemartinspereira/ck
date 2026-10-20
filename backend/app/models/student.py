@@ -1,3 +1,4 @@
+
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Integer, String
@@ -20,6 +21,11 @@ class Student(TimestampMixin, Base):
         String(150),
         nullable=False,
         index=True,
+    )
+
+    room: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
     )
 
     schedules: Mapped[list[StudentSchedule]] = relationship(

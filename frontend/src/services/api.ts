@@ -5,6 +5,7 @@ import type {
   Student,
   Teacher,
   TeacherInput,
+  StudentChecklistHistory,
 } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -16,6 +17,7 @@ export interface StudentScheduleInput {
 
 export interface StudentInput {
   name: string
+  room: string
   schedules: StudentScheduleInput[]
   course_names: string[]
 }
@@ -33,6 +35,7 @@ interface ListTeachersParams {
 }
 
 interface ListChecklistsParams {
+  room: string
   classDay: Checklist['class_day']
   classTime: Checklist['class_time']
   checklistDate?: string
@@ -149,6 +152,7 @@ export function deleteTeacher(teacherId: number): Promise<void> {
 }
 
 export async function listChecklists({
+  room,
   classDay,
   classTime,
   checklistDate,
@@ -156,6 +160,7 @@ export async function listChecklists({
   const params = new URLSearchParams({
     class_day: classDay,
     class_time: classTime,
+    room: room.trim(),
   })
 
   if (checklistDate) {
@@ -175,5 +180,15 @@ export function updateChecklistEntryObservation(
       method: 'PATCH',
       body: JSON.stringify({ observation }),
     },
+  )
+}
+
+export function getStudentChecklistHistory(
+  name: string,
+): Promise<StudentChecklistHistory[]> {
+  const params = new URLSearchParams({ name: name.trim() })
+
+  return request<StudentChecklistHistory[]>(
+    `/checklists/student-history?${params.toString()}`,
   )
 }

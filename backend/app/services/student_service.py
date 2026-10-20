@@ -1,9 +1,9 @@
+
 from sqlalchemy.orm import Session
 
 from app.models.associations import StudentSchedule
 from app.models.course import Course
 from app.models.student import Student
-from app.models.enums import ClassDay, ClassTime
 from app.repositories.student_repository import (
     delete_student,
     get_course_by_name,
@@ -44,6 +44,7 @@ def _to_response(
     return StudentResponse(
         id=student.id,
         name=student.name,
+        room=student.room,
         schedules=schedules,
         course_names=[course.name for course in student.courses],
     )
@@ -53,7 +54,10 @@ def create_student(
     session: Session,
     data: StudentCreate,
 ) -> StudentResponse:
-    student = Student(name=data.name)
+    student = Student(
+        name=data.name,
+        room=data.room,
+    )
     student.schedules = [
         StudentSchedule(
             class_day=schedule.class_day,
@@ -116,6 +120,7 @@ def update_student(
         return None
 
     student.name = data.name
+    student.room = data.room
     student.schedules.clear()
     student.schedules.extend(
         StudentSchedule(

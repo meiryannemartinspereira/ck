@@ -6,6 +6,7 @@ import TeachersPage from './pages/TeachersPage'
 import ChecklistPage from './pages/ChecklistPage'
 import DashboardPage from './pages/DashboardPage'
 import type { ClassDay, ClassTime } from './types'
+import StudentReportPage from './pages/StudentReportPage'
 import './styles/global.css'
 
 export type PageName =
@@ -14,6 +15,7 @@ export type PageName =
   | 'teachers'
   | 'checklist'
   | 'dashboard'
+  | 'student-report'
 
 function getToday(): string {
   const now = new Date()
@@ -28,6 +30,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState<PageName>('home')
   const [classDay, setClassDay] = useState<ClassDay>('SEGUNDA')
   const [classTime, setClassTime] = useState<ClassTime>('08-10')
+  const [room, setRoom] = useState('')
   const [checklistDate, setChecklistDate] = useState(getToday)
 
   function renderPage() {
@@ -43,7 +46,9 @@ function App() {
           <ChecklistPage
             classDay={classDay}
             classTime={classTime}
+            room={room}
             checklistDate={checklistDate}
+            onRoomChange={setRoom}
             onClassDayChange={setClassDay}
             onClassTimeChange={setClassTime}
             onChecklistDateChange={setChecklistDate}
@@ -55,9 +60,13 @@ function App() {
           <DashboardPage
             classDay={classDay}
             classTime={classTime}
+            room={room}
             checklistDate={checklistDate}
           />
         )
+
+      case 'student-report':
+        return <StudentReportPage />
 
       default:
         return <HomePage onNavigate={setCurrentPage} />

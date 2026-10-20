@@ -10,6 +10,7 @@ import '../styles/dashboard.css'
 interface DashboardPageProps {
   classDay: ClassDay
   classTime: ClassTime
+  room: string
   checklistDate: string
 }
 
@@ -21,6 +22,7 @@ function formatDate(date: string): string {
 function DashboardPage({
   classDay,
   classTime,
+  room,
   checklistDate,
 }: DashboardPageProps) {
   const [checklist, setChecklist] = useState<Checklist | null>(null)
@@ -35,9 +37,15 @@ function DashboardPage({
       setError('')
 
       try {
+        if (!room.trim()) {
+          setChecklist(null)
+          return
+        }
+
         const result = await listChecklists({
           classDay,
           classTime,
+          room,
           checklistDate,
         })
 
@@ -65,7 +73,7 @@ function DashboardPage({
     return () => {
       active = false
     }
-  }, [classDay, classTime, checklistDate])
+  }, [classDay, classTime, room, checklistDate])
 
   const entries = checklist?.entries ?? []
 
@@ -81,6 +89,11 @@ function DashboardPage({
       </header>
 
       <section className="dashboard-selection">
+        <div>
+          <span className="dashboard-selection-label">Sala</span>
+          <strong>{room || 'Não selecionada'}</strong>
+        </div>
+
         <div>
           <span className="dashboard-selection-label">Dia da aula</span>
           <strong>{classDay}</strong>

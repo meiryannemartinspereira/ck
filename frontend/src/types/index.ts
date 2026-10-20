@@ -22,6 +22,7 @@ export interface StudentSchedule {
 export interface Student {
   id: number
   name: string
+  room: string | null
   schedules: StudentSchedule[]
   course_names: string[]
 }
@@ -41,6 +42,7 @@ export interface TeacherSchedule {
 export interface Teacher {
   id: number
   name: string
+  room: string | null
   schedules: TeacherSchedule[]
 }
 
@@ -53,6 +55,7 @@ export interface PaginatedTeachers {
 
 export interface TeacherInput {
   name: string
+  room: string
   schedules: TeacherSchedule[]
 }
 
@@ -72,9 +75,25 @@ export interface ChecklistEntry {
 
 export interface Checklist {
   id: number
+  room: string | null
   class_day: ClassDay
   class_time: ClassTime
   status: ChecklistStatus
   date: string
   entries: ChecklistEntry[]
+}
+
+export interface StudentChecklistHistory {
+  student_id: number
+  student_name: string
+  checklist_id: number
+  checklist_date: string
+  class_day: string
+  class_time: string
+  checklist_status: string
+  entry_id: number
+  status: string
+  observation: string
+  created_at: string
+  updated_at: string
 }

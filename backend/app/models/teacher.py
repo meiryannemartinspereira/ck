@@ -10,7 +10,17 @@ class Teacher(TimestampMixin, Base):
     __tablename__ = "teachers"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(150), nullable=False, index=True)
+
+    name: Mapped[str] = mapped_column(
+        String(150),
+        nullable=False,
+        index=True,
+    )
+
+    room: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
 
     schedules: Mapped[list[TeacherSchedule]] = relationship(
         back_populates="teacher",

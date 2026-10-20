@@ -12,6 +12,7 @@ const menuItems: { label: string; page: PageName; icon: string }[] = [
   { label: 'Professores', page: 'teachers', icon: '♙' },
   { label: 'Checklist', page: 'checklist', icon: '☑' },
   { label: 'Dashboard', page: 'dashboard', icon: '▦' },
+  { label: 'Relatório por aluno', page: 'student-report', icon: '▤' },
 ]
 
 function Sidebar({ currentPage, onNavigate }: SidebarProps) {
@@ -32,9 +33,8 @@ function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           <button
             key={item.page}
             type="button"
-            className={`menu-item ${
-              currentPage === item.page ? 'active' : ''
-            }`}
+            className={`menu-item ${currentPage === item.page ? 'active' : ''
+              }`}
             onClick={() => onNavigate(item.page)}
           >
             <span className="menu-icon" aria-hidden="true">

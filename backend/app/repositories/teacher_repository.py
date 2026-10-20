@@ -51,6 +51,7 @@ def get_teachers_for_schedule(
     session: Session,
     class_day: ClassDay,
     class_time: ClassTime,
+    room: str | None = None,
 ) -> list[Teacher]:
     statement = (
         select(Teacher)
@@ -62,10 +63,14 @@ def get_teachers_for_schedule(
             TeacherSchedule.class_day == class_day,
             TeacherSchedule.class_time == class_time,
         )
-        .order_by(Teacher.name)
     )
 
-    return list(session.scalars(statement).all())
+    if room is not None:
+        statement = statement.where(Teacher.room == room)
+
+    statement = statement.order_by(Teacher.name)
+
+    return list(session.scalars(statement).unique().all())
 
 
 def delete_teacher(session: Session, teacher: Teacher) -> None:
