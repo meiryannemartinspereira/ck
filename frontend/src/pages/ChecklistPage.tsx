@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+
+import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   listChecklists,
+  listStudents,
+  listTeachers,
   updateChecklistEntryObservation,
 } from '../services/api'
 import type {
-  Checklist,
   ChecklistEntry,
   ClassDay,
   ClassTime,
@@ -43,6 +46,64 @@ function formatDate(date: string): string {
   return `${day}/${month}/${year}`
 }
 
+function getLocalDate(): string {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+async function loadAllRooms(): Promise<string[]> {
+  const pageSize = 100
+
+  const [students, teachers] = await Promise.all([
+    (async () => {
+      const firstPage = await listStudents({ page: 1, pageSize })
+      const items = [...firstPage.items]
+
+      for (
+        let page = 2;
+        items.length < firstPage.total;
+        page++
+      ) {
+        const result = await listStudents({ page, pageSize })
+
+        if (result.items.length === 0) break
+
+        items.push(...result.items)
+      }
+
+      return items.map((student) => student.room)
+    })(),
+    (async () => {
+      const firstPage = await listTeachers({ page: 1, pageSize })
+      const items = [...firstPage.items]
+
+      for (
+        let page = 2;
+        items.length < firstPage.total;
+        page++
+      ) {
+        const result = await listTeachers({ page, pageSize })
+
+        if (result.items.length === 0) break
+
+        items.push(...result.items)
+      }
+
+      return items.map((teacher) => teacher.room)
+    })(),
+  ])
+
+  return [...new Set([...students, ...teachers]
+    .filter((room): room is string => Boolean(room?.trim()))
+    .map((room) => room.trim()))].sort((a, b) =>
+      a.localeCompare(b, 'pt-BR', { numeric: true }),
+    )
+}
+
 function ChecklistPage({
   classDay,
   classTime,
@@ -53,60 +114,81 @@ function ChecklistPage({
   onClassTimeChange,
   onChecklistDateChange,
 }: ChecklistPageProps) {
-  const [checklists, setChecklists] = useState<Checklist[]>([])
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [selectedEntry, setSelectedEntry] =
     useState<ChecklistEntry | null>(null)
   const [observation, setObservation] = useState('')
 
-  const checklist = checklists[0] ?? null
-  const entries = checklist?.entries ?? []
+  const todayDate = getLocalDate()
 
-  async function loadChecklist() {
-    if (!room.trim()) {
-      setChecklists([])
-      setError('Informe a sala para consultar o checklist.')
-      setLoading(false)
-      return
-    }
+  const queryClient = useQueryClient()
 
-    setLoading(true)
-    setError('')
-    setSuccess('')
+  const roomsQuery = useQuery({
+    queryKey: ['checklist-rooms'],
+    queryFn: loadAllRooms,
+    staleTime: 0,
+    refetchOnMount: 'always',
+  })
 
-    try {
-      const result = await listChecklists({
+  const rooms = roomsQuery.data ?? []
+
+  const checklistQuery = useQuery({
+    queryKey: [
+      'checklists',
+      classDay,
+      classTime,
+      room.trim(),
+      checklistDate,
+    ],
+    queryFn: () =>
+      listChecklists({
         classDay,
         classTime,
-        room,
+        room: room.trim(),
         checklistDate,
-      })
+      }),
+    staleTime: 0,
+    refetchOnMount: 'always',
+    enabled: Boolean(room.trim()) && checklistDate === todayDate,
+  })
 
-      setChecklists(result)
-    } catch (err) {
-      setChecklists([])
+  const checklists = checklistQuery.data ?? []
+  const checklist = checklists[0] ?? null
+  const entries = checklist?.entries ?? []
+  const loading = checklistQuery.isLoading
+
+  const saveObservationMutation = useMutation({
+    mutationFn: ({
+      entryId,
+      observation: value,
+    }: {
+      entryId: ChecklistEntry['id']
+      observation: string
+    }) => updateChecklistEntryObservation(entryId, value),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['checklists'] })
+      setSelectedEntry(null)
+      setObservation('')
+      setSuccess('Observação salva com sucesso.')
+    },
+    onError: (err) => {
       setError(
         err instanceof Error
           ? err.message
-          : 'Não foi possível carregar o checklist.',
+          : 'Não foi possível salvar a observação.',
       )
-    } finally {
-      setLoading(false)
-    }
-  }
+    },
+  })
 
-  useEffect(() => {
-    void loadChecklist()
-  }, [classDay, classTime, room, checklistDate])
+  const saving = saveObservationMutation.isPending
 
   function openObservationModal(entry: ChecklistEntry) {
     setSelectedEntry(entry)
     setObservation(entry.observation ?? '')
     setError('')
     setSuccess('')
+    saveObservationMutation.reset()
   }
 
   function closeObservationModal() {
@@ -123,30 +205,18 @@ function ChecklistPage({
 
     if (!selectedEntry) return
 
-    setSaving(true)
+    if (checklistDate !== getLocalDate()) {
+      setError('Só é permitido alterar o checklist da data atual.')
+      return
+    }
+
     setError('')
     setSuccess('')
 
-    try {
-      await updateChecklistEntryObservation(
-        selectedEntry.id,
-        observation,
-      )
-
-      setSelectedEntry(null)
-      setObservation('')
-      setSuccess('Observação salva com sucesso.')
-
-      await loadChecklist()
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Não foi possível salvar a observação.',
-      )
-    } finally {
-      setSaving(false)
-    }
+    await saveObservationMutation.mutateAsync({
+      entryId: selectedEntry.id,
+      observation,
+    }).catch(() => undefined)
   }
 
   return (
@@ -163,13 +233,22 @@ function ChecklistPage({
       <section className="checklist-filters">
         <label className="checklist-field">
           <span>Sala</span>
-          <input
-            type="text"
+          <select
             value={room}
             onChange={(event) => onRoomChange(event.target.value)}
-            placeholder="Ex.: Sala 1"
-            maxLength={100}
-          />
+            disabled={roomsQuery.isLoading}
+          >
+            <option value="">
+              {roomsQuery.isLoading
+                ? 'Carregando salas...'
+                : 'Selecione uma sala'}
+            </option>
+            {rooms.map((roomOption) => (
+              <option key={roomOption} value={roomOption}>
+                {roomOption}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className="checklist-field">
@@ -209,12 +288,56 @@ function ChecklistPage({
           <input
             type="date"
             value={checklistDate}
-            onChange={(event) =>
-              onChecklistDateChange(event.target.value)
-            }
+            min={todayDate}
+            max={todayDate}
+            onChange={(event) => {
+              const selectedDate = event.target.value
+
+              if (selectedDate === todayDate) {
+                onChecklistDateChange(selectedDate)
+              }
+            }}
           />
         </label>
       </section>
+
+      {checklistDate !== todayDate && (
+        <div className="checklist-feedback checklist-error">
+          Só é permitido consultar e preencher o checklist da data atual.
+        </div>
+      )}
+
+      {roomsQuery.isError && (
+        <div className="checklist-feedback checklist-error">
+          Não foi possível carregar as salas cadastradas.
+          <button
+            type="button"
+            onClick={() => void roomsQuery.refetch()}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
+
+      {!room.trim() && (
+        <div className="checklist-feedback checklist-error">
+          Informe a sala para consultar o checklist.
+        </div>
+      )}
+
+      {checklistQuery.isError && room.trim() && (
+        <div className="checklist-feedback checklist-error">
+          {checklistQuery.error instanceof Error
+            ? checklistQuery.error.message
+            : 'Não foi possível carregar o checklist.'}
+          <button
+            type="button"
+            onClick={() => void checklistQuery.refetch()}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
 
       {error && (
         <div className="checklist-feedback checklist-error">
@@ -252,9 +375,21 @@ function ChecklistPage({
           )}
         </div>
 
-        {loading ? (
+        {checklistDate !== todayDate ? (
+          <div className="checklist-empty">
+            Selecione a data atual para consultar o checklist.
+          </div>
+        ) : loading ? (
           <div className="checklist-empty">
             Carregando checklist...
+          </div>
+        ) : !room.trim() ? (
+          <div className="checklist-empty">
+            Informe a sala para consultar o checklist.
+          </div>
+        ) : checklistQuery.isError ? (
+          <div className="checklist-empty">
+            Não foi possível carregar o checklist.
           </div>
         ) : !checklist || entries.length === 0 ? (
           <div className="checklist-empty">
@@ -323,6 +458,7 @@ function ChecklistPage({
                         type="button"
                         className="checklist-fill-button"
                         onClick={() => openObservationModal(entry)}
+                        disabled={checklistDate !== todayDate}
                       >
                         Preencher
                       </button>
@@ -401,7 +537,7 @@ function ChecklistPage({
                 <button
                   type="submit"
                   className="checklist-save-button"
-                  disabled={saving}
+                  disabled={saving || checklistDate !== todayDate}
                 >
                   {saving ? 'Salvando...' : 'Salvar observação'}
                 </button>
