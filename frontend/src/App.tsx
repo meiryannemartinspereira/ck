@@ -7,6 +7,7 @@ import ChecklistPage from './pages/ChecklistPage'
 import DashboardPage from './pages/DashboardPage'
 import type { ClassDay, ClassTime } from './types'
 import StudentReportPage from './pages/StudentReportPage'
+import ChatWidget from './components/chat/ChatWidget'
 import './styles/global.css'
 
 export type PageName =
@@ -76,6 +77,7 @@ function App() {
   return (
     <AppLayout currentPage={currentPage} onNavigate={setCurrentPage}>
       {renderPage()}
+      <ChatWidget />
     </AppLayout>
   )
 }
