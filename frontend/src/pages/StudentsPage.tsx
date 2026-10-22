@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createStudent,
   deleteStudent,
@@ -38,11 +39,9 @@ const EMPTY_SCHEDULE: ScheduleForm = {
 }
 
 function StudentsPage() {
-  const [students, setStudents] = useState<Student[]>([])
+  const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -56,44 +55,26 @@ function StudentsPage() {
   const [courses, setCourses] = useState('')
 
   const pageSize = 10
+
+  const {
+    data: studentResult,
+    isPending: loading,
+    error: queryError,
+    refetch,
+  } = useQuery({
+    queryKey: ['students', search, page, pageSize],
+    queryFn: () =>
+      listStudents({
+        name: search,
+        page,
+        pageSize,
+      }),
+  })
+
+  const students = studentResult?.items ?? []
+  const total = studentResult?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const isReadOnly = modalMode === 'view'
-
-  useEffect(() => {
-    let active = true
-
-    async function loadStudents() {
-      setLoading(true)
-      setError('')
-
-      try {
-        const result = await listStudents({
-          name: search,
-          page,
-          pageSize,
-        })
-
-        if (active) {
-          setStudents(result.items)
-          setTotal(result.total)
-        }
-      } catch {
-        if (active) {
-          setError('Não foi possível carregar os alunos.')
-        }
-      } finally {
-        if (active) {
-          setLoading(false)
-        }
-      }
-    }
-
-    void loadStudents()
-
-    return () => {
-      active = false
-    }
-  }, [search, page])
 
   function openCreateModal() {
     setSelectedStudent(null)
@@ -146,20 +127,6 @@ function StudentsPage() {
 
   function removeSchedule(index: number) {
     setSchedules((current) => current.filter((_, i) => i !== index))
-  }
-
-  async function refreshStudents(
-    targetPage = page,
-    targetSearch = search,
-  ) {
-    const result = await listStudents({
-      name: targetSearch,
-      page: targetPage,
-      pageSize,
-    })
-
-    setStudents(result.items)
-    setTotal(result.total)
   }
 
   async function handleSave(event: React.FormEvent<HTMLFormElement>) {
@@ -233,7 +200,9 @@ function StudentsPage() {
       setSelectedStudent(null)
       setPage(1)
 
-      await refreshStudents(1)
+      await queryClient.invalidateQueries({
+        queryKey: ['students'],
+      })
     } catch (err) {
       setError(
         err instanceof Error
@@ -258,18 +227,15 @@ function StudentsPage() {
     try {
       await deleteStudent(student.id)
 
-      const nextTotal = Math.max(0, total - 1)
       const nextPage =
         students.length === 1 && page > 1 ? page - 1 : page
 
-      setTotal(nextTotal)
-      setStudents((current) =>
-        current.filter((item) => item.id !== student.id),
-      )
       setPage(nextPage)
       setSuccess('Aluno excluído com sucesso.')
 
-      await refreshStudents(nextPage)
+      await queryClient.invalidateQueries({
+        queryKey: ['students'],
+      })
     } catch (err) {
       setError(
         err instanceof Error
@@ -326,15 +292,13 @@ function StudentsPage() {
 
       {loading ? (
         <p className="students-feedback">Carregando alunos...</p>
-      ) : error && students.length === 0 && !modalMode ? (
+      ) : queryError && students.length === 0 && !modalMode ? (
         <div className="students-empty">
           <h3>Não foi possível carregar os alunos</h3>
-          <p>{error}</p>
+          <p>Verifique sua conexão e tente novamente.</p>
           <button
             type="button"
-            onClick={() => void refreshStudents().catch(() => {
-              setError('Não foi possível carregar os alunos.')
-            })}
+            onClick={() => void refetch()}
           >
             Tentar novamente
           </button>
